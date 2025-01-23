@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package com.example.test1
 
 import android.app.AlertDialog
@@ -17,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.test1.ui.theme.Test1Theme
 
 class MainActivity : ComponentActivity() {
@@ -28,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Test1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+                    notaView(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -50,11 +54,51 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
-/*
+
 @Preview(showBackground = true)
 @Composable
-fun notaCalculator()
-*/
+fun notaView(modifier: Modifier = Modifier){
+    var nota by remember { mutableStateOf("") }
+    var notaLiteral by remember { mutableStateOf("")}
+    var showEmptyAlert by remember { mutableStateOf(false) }
+    var showOutLimitAlert by remember { mutableStateOf(false) }
+
+
+    Column(modifier = Modifier.padding(16.dp)){
+        TextField(
+            value = nota,
+            onValueChange = {nota = it
+                            showEmptyAlert = nota.isEmpty()
+                            showOutLimitAlert = nota.toIntOrNull() !in 0..100},
+            label = {Text("Nota: ")},
+            placeholder = {Text("Ejemplo: 85")},
+            modifier = Modifier)
+        Button(onClick = {
+            notaLiteral = notaToLiteral(nota.toByte())
+        })
+        {
+            Text(text = "Calcular la nota",
+                modifier = Modifier)
+        }
+        Text(text = "Nota: $notaLiteral",
+            modifier = Modifier)
+        if(showEmptyAlert){
+            emptyAlert(
+                showDialog = showEmptyAlert,
+                onDismiss = { showEmptyAlert = false },
+                onConfirm = { showEmptyAlert = false }
+            )
+        }
+        if(showOutLimitAlert){
+            outLimitAlert(
+                showDialog = showOutLimitAlert,
+                onDismiss = { showOutLimitAlert = false },
+                onConfirm = { showOutLimitAlert = false }
+            )
+        }
+    }
+}
+
 fun notaToLiteral(calificacion: Byte): String {
     var literal = "";
     if(calificacion in 90..100){
@@ -70,5 +114,48 @@ fun notaToLiteral(calificacion: Byte): String {
     else{
         literal = "F"
         return literal
+    }
+}
+
+@Composable
+fun emptyAlert(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Nota vacia") },
+            text = { Text("Por favor ingrese una nota") },
+            confirmButton = {
+                Button(onClick = { onConfirm() }) {
+                    Text("Aceptar")
+                }
+            },
+            containerColor = AlertDialogDefaults.containerColor,
+            titleContentColor = Color.Blue,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+            shape = AlertDialogDefaults.shape,
+        )
+    }
+}
+@Composable
+fun outLimitAlert(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+){
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Nota fuera de rango") },
+            text = { Text("Por favor ingrese una nota entre 0 y 100") },
+            confirmButton = {
+                Button(onClick = { onConfirm() }) {
+                    Text("Aceptar")
+                }
+            }
+        )
     }
 }
