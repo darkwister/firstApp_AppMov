@@ -28,10 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Test1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
                 }
             }
         }
@@ -46,13 +43,32 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-fun Sumar(x: Int, y: Int) = x + y
-
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     Test1Theme {
         Greeting("Android")
+    }
+}
+/*
+@Preview(showBackground = true)
+@Composable
+fun notaCalculator()
+*/
+fun notaToLiteral(calificacion: Byte): String {
+    var literal = "";
+    if(calificacion in 90..100){
+        literal = "A"
+        return literal
+    }else if(calificacion in 80..89){
+        literal = "B"
+        return literal
+    }else if(calificacion>70){
+        literal = "C"
+        return literal
+    }
+    else{
+        literal = "F"
+        return literal
     }
 }
