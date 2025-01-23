@@ -6,10 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
@@ -24,9 +27,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.test1.ui.theme.Test1Theme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +41,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Test1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CenterAll(modifier = Modifier.padding(innerPadding))
+                    AppInstance(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -46,6 +52,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun notaView(){
     var nota by remember { mutableStateOf("") }
+    var notaLast by remember {mutableStateOf("")}
     var notaLiteral by remember { mutableStateOf("")}
     var showEmptyAlert by remember { mutableStateOf(false) }
     var showOutLimitAlert by remember { mutableStateOf(false) }
@@ -55,28 +62,33 @@ fun notaView(){
         TextField(
             value = nota,
             onValueChange = {nota = it
-                            showEmptyAlert = nota.isEmpty()
                             showOutLimitAlert = nota.toIntOrNull() !in 0..100},
-            label = {Text("Nota: ")},
+            label = {Text("Nota numerica: ")},
             placeholder = {Text("Ejemplo: 85")},
             modifier = Modifier)
         Button(onClick = {
-            notaLiteral = notaToLiteral(nota.toByte())
-            nota = ""
+            if(nota.isEmpty()){
+               showEmptyAlert = true
+            }
+            else {
+                notaLiteral = notaToLiteral(nota.toByte())
+                notaLast = nota;
+                nota = ""
+            }
         })
         {
             Text(text = "Calcular la nota",
                 modifier = Modifier)
         }
-        Text(text = "Nota: $notaLiteral",
-            modifier = Modifier)
+        Text(text = "Nota literal: $notaLiteral - $notaLast",
+            modifier = Modifier.padding(20.dp).size(170.dp))
+
         if(showEmptyAlert){
             emptyAlert(
                 showDialog = showEmptyAlert,
                 onDismiss = { showEmptyAlert = false },
                 onConfirm = { showEmptyAlert = false }
             )
-            nota = ""
         }
         if(showOutLimitAlert){
             outLimitAlert(
@@ -151,11 +163,49 @@ fun outLimitAlert(
 }
 
 @Composable
-fun CenterAll(modifier: Modifier = Modifier){
+fun MiData(){
+    val nombre = "Job Jefferson Pérez Cabrera"
+    val matricula = "2023-0188"
+    val foto = painterResource(R.drawable.myself)
+    Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom
+    ){
+        Text(
+            text = nombre,
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(
+            text = matricula,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+    Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ){
+        Image(
+            painter = foto,
+            "Yo mismo",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(130.dp).padding(16.dp)
+        )
+    }
+
+}
+@Composable
+fun AppInstance(modifier: Modifier = Modifier){
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
         notaView()
     }
+    MiData()
+}
+
+@Preview (showBackground = true)
+@Composable
+fun MiDataPreview() {
+    MiData()
 }
