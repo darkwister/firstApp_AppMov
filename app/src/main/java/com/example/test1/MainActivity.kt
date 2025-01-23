@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
@@ -32,7 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Test1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    notaView(modifier = Modifier.padding(innerPadding))
+                    CenterAll(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -57,7 +59,7 @@ fun GreetingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun notaView(modifier: Modifier = Modifier){
+fun notaView(){
     var nota by remember { mutableStateOf("") }
     var notaLiteral by remember { mutableStateOf("")}
     var showEmptyAlert by remember { mutableStateOf(false) }
@@ -75,6 +77,7 @@ fun notaView(modifier: Modifier = Modifier){
             modifier = Modifier)
         Button(onClick = {
             notaLiteral = notaToLiteral(nota.toByte())
+            nota = ""
         })
         {
             Text(text = "Calcular la nota",
@@ -88,6 +91,7 @@ fun notaView(modifier: Modifier = Modifier){
                 onDismiss = { showEmptyAlert = false },
                 onConfirm = { showEmptyAlert = false }
             )
+            nota = ""
         }
         if(showOutLimitAlert){
             outLimitAlert(
@@ -95,6 +99,7 @@ fun notaView(modifier: Modifier = Modifier){
                 onDismiss = { showOutLimitAlert = false },
                 onConfirm = { showOutLimitAlert = false }
             )
+            nota = ""
         }
     }
 }
@@ -157,5 +162,15 @@ fun outLimitAlert(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun CenterAll(modifier: Modifier = Modifier){
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        notaView()
     }
 }
