@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun notaView(){
+fun NotaView(){
     var nota by remember { mutableStateOf("") }
     var notaLast by remember {mutableStateOf("")}
     var notaLiteral by remember { mutableStateOf("")}
@@ -77,7 +77,7 @@ fun notaView(){
             }
             else {
                 notaLiteral = notaToLiteral(nota.toByte())
-                notaLast = nota;
+                notaLast = nota
                 nota = ""
             }
         })
@@ -89,14 +89,14 @@ fun notaView(){
             modifier = Modifier.padding(20.dp).size(170.dp))
 
         if(showEmptyAlert){
-            emptyAlert(
+            EmptyAlert(
                 showDialog = showEmptyAlert,
                 onDismiss = { showEmptyAlert = false },
                 onConfirm = { showEmptyAlert = false }
             )
         }
         if(showOutLimitAlert){
-            outLimitAlert(
+            OutLimitAlert(
                 showDialog = showOutLimitAlert,
                 onDismiss = { showOutLimitAlert = false },
                 onConfirm = { showOutLimitAlert = false }
@@ -108,24 +108,17 @@ fun notaView(){
 
 fun notaToLiteral(calificacion: Byte): String {
     var literal = ""
-    if(calificacion in 90..100){
-        literal = "A"
-        return literal
-    }else if(calificacion in 80..89){
-        literal = "B"
-        return literal
-    }else if(calificacion in 70..79){
-        literal = "C"
-        return literal
+    when (calificacion) {
+        in 90..100 -> literal = "A"
+        in 80..89 -> literal = "B"
+        in 70..79 -> literal = "C"
+        in 0..69 -> literal = "F"
     }
-    else{
-        literal = "F"
-        return literal
-    }
+    return literal
 }
 
 @Composable
-fun emptyAlert(
+fun EmptyAlert(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
@@ -148,7 +141,7 @@ fun emptyAlert(
     }
 }
 @Composable
-fun outLimitAlert(
+fun OutLimitAlert(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
@@ -206,7 +199,7 @@ fun AppInstance(modifier: Modifier = Modifier){
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
-        notaView()
+        NotaView()
     }
     MiData()
 }
