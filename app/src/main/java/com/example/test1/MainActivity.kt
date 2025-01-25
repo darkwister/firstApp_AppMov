@@ -1,5 +1,3 @@
-@file:Suppress("SpellCheckingInspection")
-
 package com.example.test1
 
 import android.os.Bundle
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
@@ -29,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.test1.ui.theme.Test1Theme
@@ -48,9 +49,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
-fun notaView(){
+fun NotaView(){
     var nota by remember { mutableStateOf("") }
     var notaLast by remember {mutableStateOf("")}
     var notaLiteral by remember { mutableStateOf("")}
@@ -65,14 +66,18 @@ fun notaView(){
                             showOutLimitAlert = nota.toIntOrNull() !in 0..100},
             label = {Text("Nota numerica: ")},
             placeholder = {Text("Ejemplo: 85")},
-            modifier = Modifier)
+            modifier = Modifier,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ))
         Button(onClick = {
             if(nota.isEmpty()){
                showEmptyAlert = true
             }
             else {
                 notaLiteral = notaToLiteral(nota.toByte())
-                notaLast = nota;
+                notaLast = nota
                 nota = ""
             }
         })
@@ -84,14 +89,14 @@ fun notaView(){
             modifier = Modifier.padding(20.dp).size(170.dp))
 
         if(showEmptyAlert){
-            emptyAlert(
+            EmptyAlert(
                 showDialog = showEmptyAlert,
                 onDismiss = { showEmptyAlert = false },
                 onConfirm = { showEmptyAlert = false }
             )
         }
         if(showOutLimitAlert){
-            outLimitAlert(
+            OutLimitAlert(
                 showDialog = showOutLimitAlert,
                 onDismiss = { showOutLimitAlert = false },
                 onConfirm = { showOutLimitAlert = false }
@@ -103,24 +108,17 @@ fun notaView(){
 
 fun notaToLiteral(calificacion: Byte): String {
     var literal = ""
-    if(calificacion in 90..100){
-        literal = "A"
-        return literal
-    }else if(calificacion in 80..89){
-        literal = "B"
-        return literal
-    }else if(calificacion>70){
-        literal = "C"
-        return literal
+    when (calificacion) {
+        in 90..100 -> literal = "A"
+        in 80..89 -> literal = "B"
+        in 70..79 -> literal = "C"
+        in 0..69 -> literal = "F"
     }
-    else{
-        literal = "F"
-        return literal
-    }
+    return literal
 }
 
 @Composable
-fun emptyAlert(
+fun EmptyAlert(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
@@ -143,7 +141,7 @@ fun emptyAlert(
     }
 }
 @Composable
-fun outLimitAlert(
+fun OutLimitAlert(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
@@ -151,7 +149,7 @@ fun outLimitAlert(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Nota fuera de rango") },
+            title = { Text("La nota debe ser un numero dentro del rango") },
             text = { Text("Por favor ingrese una nota entre 0 y 100") },
             confirmButton = {
                 Button(onClick = { onConfirm() }) {
@@ -193,19 +191,15 @@ fun MiData(){
     }
 
 }
+
+@Preview
 @Composable
 fun AppInstance(modifier: Modifier = Modifier){
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
-        notaView()
+        NotaView()
     }
-    MiData()
-}
-
-@Preview (showBackground = true)
-@Composable
-fun MiDataPreview() {
     MiData()
 }

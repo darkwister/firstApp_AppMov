@@ -9,7 +9,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.test1"
+        applicationId = "com.wister.calificator"
         minSdk = 21
         targetSdk = 35
         versionCode = 1
