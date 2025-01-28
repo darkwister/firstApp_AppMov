@@ -57,13 +57,15 @@ fun NotaView(){
     var notaLiteral by remember { mutableStateOf("")}
     var showEmptyAlert by remember { mutableStateOf(false) }
     var showOutLimitAlert by remember { mutableStateOf(false) }
+    var showCharacterLimit by remember { mutableStateOf(false) }
 
 
     Column(modifier = Modifier.padding(16.dp)){
         TextField(
             value = nota,
             onValueChange = {nota = it
-                            showOutLimitAlert = nota.toIntOrNull() !in 0..100},
+                            showOutLimitAlert = nota.toInt() !in 0..100
+                            showCharacterLimit = nota.length > 3},
             label = {Text("Nota numerica: ")},
             placeholder = {Text("Ejemplo: 85")},
             modifier = Modifier,
@@ -103,6 +105,14 @@ fun NotaView(){
             )
             nota = ""
         }
+        if(showCharacterLimit){
+            CharacterLimit(
+                showDialog = showCharacterLimit,
+                onDismiss = { showCharacterLimit = false },
+                onConfirm = { showCharacterLimit = false }
+            )
+            nota = ""
+        }
     }
 }
 
@@ -127,7 +137,7 @@ fun EmptyAlert(
         AlertDialog(
             onDismissRequest = { onDismiss() },
             title = { Text("Nota vacia") },
-            text = { Text("Por favor ingrese una nota") },
+            text = { Text("Por favor ingrese una nota entre 0 y 100") },
             confirmButton = {
                 Button(onClick = { onConfirm() }) {
                     Text("Aceptar")
@@ -149,7 +159,7 @@ fun OutLimitAlert(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("La nota debe ser un numero dentro del rango") },
+            title = { Text("Nota demasiado grande") },
             text = { Text("Por favor ingrese una nota entre 0 y 100") },
             confirmButton = {
                 Button(onClick = { onConfirm() }) {
@@ -159,7 +169,25 @@ fun OutLimitAlert(
         )
     }
 }
-
+@Composable
+fun CharacterLimit(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+){
+    if(showDialog){
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Limite de caracteres") },
+            text = { Text("Por favor ingrese una nota entre 0 y 100") },
+            confirmButton = {
+                Button(onClick = { onConfirm() }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
+}
 @Composable
 fun MiData(){
     val nombre = "Job Jefferson Pérez Cabrera"
